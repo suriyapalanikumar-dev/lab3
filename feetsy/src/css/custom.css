@@ -1,0 +1,24 @@
+.navf{
+    margin-top: 1%;
+    margin-left:0%;
+
+}
+
+.appname{
+    color:#fc835b;
+    font-size: 30px;
+    font-style:oblique;
+    font-family: Verdana, Geneva, Tahoma, sans-serif;
+    font-weight: bolder;
+
+}
+
+.searchitem{
+    border-radius: 50px;
+}
+
+.signin{
+    font-size: larger;
+    font-weight: bold;
+    margin-top: 3%;
+}
