@@ -2,7 +2,7 @@ const express = require('express')
 const {graphqlHTTP} = require('express-graphql');
 const schema = require('./schema/schema')
 const InitiateMongoServer = require("./config/db")
-InitiateMongoServer()
+InitiateMongoServer() 
 //const graphqlHTTP = require('express-graphql').graphqlHTTP
 
 const app = express();
