@@ -3,7 +3,7 @@ const bcrypt = require('bcryptjs');
 const jwt = require("jsonwebtoken");
 const crypto = require('crypto');
 const User = require("../model/user");
-const { response } = require('../index.js');
+
 
 genToken = user => {
   return jwt.sign({
