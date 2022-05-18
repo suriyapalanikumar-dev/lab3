@@ -12,9 +12,9 @@ query($email: String,$password: String) {
 }
 `;
 
-const fetchGroupsQuery = gql`
-query($user_id: String) {
-  fetchGroups(user_id:$user_id)
+const displayshop_query = gql`
+query($shopname: String) {
+    displayShopDetails(shopname:$shop_name)
 }
 `;
 
@@ -67,7 +67,7 @@ query($group_id: String) {
 
 
 export {
-  loginQuery,
+  login_query,
   fetchGroupsQuery,
   fetchUsersQuery,
   getAllExpensesQuery,

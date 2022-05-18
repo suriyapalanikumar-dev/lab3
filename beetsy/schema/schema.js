@@ -152,6 +152,26 @@ const RootQuery = new GraphQLObjectType({
         });
       },
     },
+
+    displayShopDetails: {
+      type: ShopType,
+      args: {
+        shopname: {type:GraphQLString}
+      },
+      resolve(parent, args) {
+        return new Promise((resolve, reject) => {
+          Shop.findOne({"shopname":shopname}, function(err, result) {
+            let res = {};
+            if (err) {
+              resolve(err);
+            }
+            else{
+            resolve(res);
+            }
+          });
+        });
+      },
+    },
 }
 });
 
