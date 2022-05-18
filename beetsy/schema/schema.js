@@ -99,7 +99,7 @@ const ShopType = new GraphQLObjectType({
 })
 })
 
-const PurchaseSchema = new GraphQLObjectType({
+const PurchaseType = new GraphQLObjectType({
   name: 'Purchase',
   fields: () => ({
   itemid:{
@@ -113,6 +113,9 @@ const PurchaseSchema = new GraphQLObjectType({
   },
   price:{
       type:GraphQLInt
+  },
+  userId:{
+    type:GraphQLInt
   },
   totalAmount:{type:GraphQLString}, 
   createdAt:{
@@ -160,15 +163,124 @@ const RootQuery = new GraphQLObjectType({
       },
       resolve(parent, args) {
         return new Promise((resolve, reject) => {
-          Shop.findOne({"shopname":shopname}, function(err, result) {
+          ShopModel.findOne({"shopname":shopname}, function(err, result) {
             let res = {};
             if (err) {
               resolve(err);
             }
             else{
-            resolve(res);
+            resolve(result);
             }
           });
+        });
+      },
+    },
+
+    fetchFavorite:{
+      type: UserType,
+      args: {
+        userId: {type:GraphQLString}
+      },
+      resolve(parent, args) {
+        return new Promise((resolve, reject) => {
+          UserModel.find({ '_id':userId }, function(err, result) {
+            let res = {};
+            if (err) {
+              resolve(err);
+            }
+            else{
+            resolve(result);
+            }
+          });
+        });
+      },
+    },
+
+    fetchSearch:{
+      type: ItemType,
+      args: {
+        value: {type:GraphQLString}
+      },
+      resolve(parent, args) {
+        return new Promise((resolve, reject) => {
+          const resp = []
+          const val = value.toLowerCase()
+          var temp1 = ItemModel.find({}, function(err, result){
+            //console.log(temp1)
+            if(err)
+            {
+              resolve(err);
+            }
+            result.forEach(element => {
+            if(element["itemname"].toLowerCase().includes(val))
+            {
+              resp.push(element)
+            }
+          });
+          resolve(resp)
+          });
+        });
+      },
+    },
+
+    fetchCart:{
+      type: UserType,
+      args: {
+        userId: {type:GraphQLString},
+      },
+      resolve(parent, args) {
+        return new Promise((resolve, reject) => {
+          UserModel.findOne({"_id":userId}, function(err, result){
+            ItemModel.find({'_id':{ $in: result["cart"] }}, function(err, resp){
+              if(err)
+              {
+                resolve(err)
+              }
+              else{
+                resolve(resp)
+              }
+            })
+          });
+        });
+      },
+    },
+
+    fetchSummaryItem:{
+      type: ItemType,
+      args: {
+        itemId: {type:GraphQLString},
+      },
+      resolve(parent, args) {
+        return new Promise((resolve, reject) => {
+          ItemModel.find({'_id': itemId}, function(err, resp){
+            if(err)
+            {
+              resolve(err)
+            }
+            else{
+              resolve(resp)
+            }
+          })
+        });
+      },
+    },
+
+    myPurchase:{
+      type: PurchaseType,
+      args: {
+        userId: {type:GraphQLString},
+      },
+      resolve(parent, args) {
+        return new Promise((resolve, reject) => {
+          PurchaseModel.find({'userId': userId}, function(err, resp){
+            if(err)
+            {
+              resolve(err)
+            }
+            else{
+              resolve(resp)
+            }
+          })
         });
       },
     },
@@ -215,7 +327,7 @@ const Mutation = new GraphQLObjectType({
         profileURL: {type:GraphQLString}
       },
       resolve(parent, args) {
-        User.findOneAndUpdate({"_id":userId}, {"DOB":dob, "address":address,"state":state, "country":country, "city":city, "phone":phone}, function (err, result){
+        UserModel.findOneAndUpdate({"_id":userId}, {"DOB":dob, "address":address,"state":state, "country":country, "city":city, "phone":phone}, function (err, result){
           if (err) {
             resolve(err);
           }
@@ -234,7 +346,7 @@ const Mutation = new GraphQLObjectType({
         shopphoto : {type: GraphQLString}
     },
     resolve(parent, args) {
-      let newShop = new Shop({"shopname":shopname, "ownerID":ownerId, "shopphoto":shopphoto})
+      let newShop = new ShopModel({"shopname":shopname, "ownerID":ownerId, "shopphoto":shopphoto})
       return newShop.save()
   },
   },
@@ -251,7 +363,7 @@ const Mutation = new GraphQLObjectType({
       shopname: {type: GraphQLString}
     },
     resolve(parent, args) {
-      let newItem = new Item({"itemname":itemname, "itemcount":itemcount,"itemphoto":itemphoto, "itemcategory":itemcategory,"itemdesc":itemdesc,"price":price,"shopname":shopname})
+      let newItem = new ItemModel({"itemname":itemname, "itemcount":itemcount,"itemphoto":itemphoto, "itemcategory":itemcategory,"itemdesc":itemdesc,"price":price,"shopname":shopname})
       return newItem.save()
   },
   },
@@ -278,7 +390,7 @@ const Mutation = new GraphQLObjectType({
      {
        data["price"] = price
      }
-     Item.findOneAndUpdate({"itemname":itemname},data, function(err, result){
+     ItemModel.findOneAndUpdate({"itemname":itemname},data, function(err, result){
       if(err)
       {
         resolve(err);
@@ -298,7 +410,7 @@ const Mutation = new GraphQLObjectType({
     itemId:  {type: GraphQLString},
     },
     resolve(parent, args) {
-    User.findOne({"_id":userId}, function(err, result){
+    UserModel.findOne({"_id":userId}, function(err, result){
       if(err)
     {
       resolve(err)
@@ -319,10 +431,10 @@ const Mutation = new GraphQLObjectType({
     quantity:{type:GraphQLInt}
     },
     resolve(parent, args) {
-    User.findOne({"_id":userId}, function(err, result){
+    UserModel.findOne({"_id":userId}, function(err, result){
     if(err)
     {
-      resulve(err)
+      resolve(err)
     }
     if(!result["cart"].includes(itemid))
     {
@@ -342,7 +454,7 @@ const Mutation = new GraphQLObjectType({
     price:{type:GraphQLInt}
     },
     resolve(parent, args) {
-      let purchase = new Purchase({"itemid": itemId, "gift":gift, "quantity":quantity,"price":price})
+      let purchase = new PurchaseModel({"itemid": itemId, "gift":gift, "quantity":quantity,"price":price})
       return purchase.save()
     },
   }
