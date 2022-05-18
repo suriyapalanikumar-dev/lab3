@@ -17,59 +17,63 @@ query($shopname: String) {
     displayShopDetails(shopname:$shop_name)
 }
 `;
-
-const fetchUsersQuery = gql`
-query{
-  fetchUsers{
-    name
-    email
-    _id
-  }
+const fetchitemsummary_query = gql`
+query($itemId: String) {
+    fetchSummaryItem(itemId:$itemId)
+    {
+        itemname
+        itemcount
+        itemphoto
+        itemcategory
+        itemdesc
+        price
+        shopname
+    }
 }`;
 
 
-const getAllExpensesQuery = gql`
-query($group_id: String) {
-  getAllExpenses(group_id:$group_id){
-    group_id
-    description
-    paid_by
-    amount
-    created_date
-    updated_date
-    paid_to_users{
-      paid_to
-      amount
-      settled
-      _id
-    }
-  }
+const fetchfavorite_query = gql`
+query($userId: String) {
+    fetchFavorite(userId:$userId)
 }`;
 
-
-const getAllIndividualExpensesQuery = gql`
-query($group_id: String) {
-  getAllIndividualExpensesQuery(group_id:$group_id){
-    group_id
-    description
-    paid_by
-    amount
-    created_date
-    updated_date
-    paid_to_users{
-      paid_to
-      amount
-      settled
-      _id
+const fetchsearch_query = gql`
+query($value: String) {
+    fetchSearch(value:$value)
+    {
+        itemname
+        itemcount
+        itemphoto
+        itemcategory
+        itemdesc
+        price
+        shopname
     }
-  }
+}`;
+
+const fetchpurchase_query = gql`
+query($userId: String) {
+    myPurchase(userId:$userId)
+    {
+        itemid
+        gift
+        quantity
+        price
+        totalAmount
+    }
+}`;
+
+const fetchcart_query = gql`
+query($userId: String) {
+    fetchCart(userId:$userId);
 }`;
 
 
 export {
   login_query,
-  fetchGroupsQuery,
-  fetchUsersQuery,
-  getAllExpensesQuery,
-  getAllIndividualExpensesQuery,
+  displayshop_query,
+  fetchfavorite_query,
+  fetchsearch_query,
+  fetchcart_query,
+  fetchitemsummary_query
 };
