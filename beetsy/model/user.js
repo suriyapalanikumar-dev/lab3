@@ -36,6 +36,7 @@ const UserSchema = new mongoose.Schema({
         maxlength: [100, "About information can not be more than 100 characters"],
         default:''
     },
+    token:{type:String},
     favorites:{
         type:[String],
     },

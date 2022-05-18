@@ -53,14 +53,14 @@ app.post("/updateprofileimgdb", passport.authenticate('jwt',{session: false}),pr
 app.get("/image/:key",imgctrl.retrieveImg)
 app.post("/updateProfile", passport.authenticate('jwt',{session: false}),authenticatectrl.updateUserdetails)
 app.post("/checkshopname", passport.authenticate('jwt',{session: false}),shopctrl.isshopnameavailabile)//&&
-app.post("/createshopdetails", passport.authenticate('jwt',{session: false}), shopctrl.createshopname)//##
+app.post("/createshopdetails", passport.authenticate('jwt',{session: false}), shopctrl.createshopname)
 app.post("/displayshopdetails", passport.authenticate('jwt',{session: false}),shopctrl.getshopdetails)//&&
 app.post("/uploadshopdp",upload.single('profile-file'), imgctrl.uploadpic)
 app.post("/updateshopimgdb", shopctrl.updateshopimage)
-app.post("/additem",itemctrl.enrollItem)//##
+app.post("/additem",itemctrl.enrollItem)
 app.post("/uploaditemdp",upload.single('profile-file'), imgctrl.uploadpic)
 app.get("/getuniqueItems/:shopname", itemctrl.fetchItem)
-app.post("/editItem", itemctrl.updateItem)//##
+app.post("/editItem", itemctrl.updateItem)
 app.get("/displayItems", itemctrl.getallItems)//&&
 app.post("/makeFavorite",passport.authenticate('jwt',{session: false}), itemctrl.setFavorite)//##
 app.post("/deleteFavorite", passport.authenticate('jwt',{session: false}),itemctrl.removeFavorite)
