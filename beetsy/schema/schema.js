@@ -163,7 +163,7 @@ const RootQuery = new GraphQLObjectType({
       },
       resolve(parent, args) {
         return new Promise((resolve, reject) => {
-          ShopModel.findOne({"shopname":shopname}, function(err, result) {
+          ShopModel.findOne({"shopname":args.shopname}, function(err, result) {
             let res = {};
             if (err) {
               resolve(err);
@@ -183,7 +183,7 @@ const RootQuery = new GraphQLObjectType({
       },
       resolve(parent, args) {
         return new Promise((resolve, reject) => {
-          UserModel.find({ '_id':userId }, function(err, result) {
+          UserModel.find({ '_id':args.userId }, function(err, result) {
             let res = {};
             if (err) {
               resolve(err);
@@ -204,7 +204,7 @@ const RootQuery = new GraphQLObjectType({
       resolve(parent, args) {
         return new Promise((resolve, reject) => {
           const resp = []
-          const val = value.toLowerCase()
+          const val = args.value.toLowerCase()
           var temp1 = ItemModel.find({}, function(err, result){
             //console.log(temp1)
             if(err)
@@ -230,7 +230,7 @@ const RootQuery = new GraphQLObjectType({
       },
       resolve(parent, args) {
         return new Promise((resolve, reject) => {
-          UserModel.findOne({"_id":userId}, function(err, result){
+          UserModel.findOne({"_id":args.userId}, function(err, result){
             ItemModel.find({'_id':{ $in: result["cart"] }}, function(err, resp){
               if(err)
               {
@@ -252,7 +252,7 @@ const RootQuery = new GraphQLObjectType({
       },
       resolve(parent, args) {
         return new Promise((resolve, reject) => {
-          ItemModel.find({'_id': itemId}, function(err, resp){
+          ItemModel.find({'_id': args.itemId}, function(err, resp){
             if(err)
             {
               resolve(err)
@@ -272,7 +272,7 @@ const RootQuery = new GraphQLObjectType({
       },
       resolve(parent, args) {
         return new Promise((resolve, reject) => {
-          PurchaseModel.find({'userId': userId}, function(err, resp){
+          PurchaseModel.find({'userId': args.userId}, function(err, resp){
             if(err)
             {
               resolve(err)
@@ -327,7 +327,8 @@ const Mutation = new GraphQLObjectType({
         profileURL: {type:GraphQLString}
       },
       resolve(parent, args) {
-        UserModel.findOneAndUpdate({"_id":userId}, {"DOB":dob, "address":address,"state":state, "country":country, "city":city, "phone":phone}, function (err, result){
+        UserModel.findOneAndUpdate({"_id":args.userId}, {"DOB":args.dob, "address":args.address,
+        "state":args.state, "country":args.country, "city":args.city, "phone":args.phone}, function (err, result){
           if (err) {
             resolve(err);
           }
@@ -346,7 +347,7 @@ const Mutation = new GraphQLObjectType({
         shopphoto : {type: GraphQLString}
     },
     resolve(parent, args) {
-      let newShop = new ShopModel({"shopname":shopname, "ownerID":ownerId, "shopphoto":shopphoto})
+      let newShop = new ShopModel({"shopname":args.shopname, "ownerID":args.ownerId, "shopphoto":args.shopphoto})
       return newShop.save()
   },
   },
@@ -363,8 +364,17 @@ const Mutation = new GraphQLObjectType({
       shopname: {type: GraphQLString}
     },
     resolve(parent, args) {
-      let newItem = new ItemModel({"itemname":itemname, "itemcount":itemcount,"itemphoto":itemphoto, "itemcategory":itemcategory,"itemdesc":itemdesc,"price":price,"shopname":shopname})
-      return newItem.save()
+      let res = {};
+      let newItem = new ItemModel({"itemname":args.itemname, "itemcount":args.itemcount,"itemphoto":args.itemphoto, 
+      "itemcategory":args.itemcategory,"itemdesc":args.itemdesc,"price":args.price,"shopname":args.shopname})
+      if(newItem)
+      {
+        res = newItem.save();
+      }
+      else{
+        res.error = "Unable to add items"
+      }
+      resolve(res)
   },
   },
 
@@ -380,17 +390,17 @@ const Mutation = new GraphQLObjectType({
     let data = {}
      if(itemcount)
      {
-       data["itemcount"] = itemcount
+       data["itemcount"] = args.itemcount
      }
      if(itemdesc)
      {
-       data["itemdesc"] = itemdesc
+       data["itemdesc"] = args.itemdesc
      }
      if(price)
      {
-       data["price"] = price
+       data["price"] = args.price
      }
-     ItemModel.findOneAndUpdate({"itemname":itemname},data, function(err, result){
+     ItemModel.findOneAndUpdate({"itemname":args.itemname},data, function(err, result){
       if(err)
       {
         resolve(err);
@@ -410,13 +420,13 @@ const Mutation = new GraphQLObjectType({
     itemId:  {type: GraphQLString},
     },
     resolve(parent, args) {
-    UserModel.findOne({"_id":userId}, function(err, result){
+    UserModel.findOne({"_id":args.userId}, function(err, result){
       if(err)
     {
       resolve(err)
     }
     else{
-      result["favorites"].push(itemid)
+      result["favorites"].push(args.itemid)
       return result.save()
     }
     })
@@ -431,14 +441,14 @@ const Mutation = new GraphQLObjectType({
     quantity:{type:GraphQLInt}
     },
     resolve(parent, args) {
-    UserModel.findOne({"_id":userId}, function(err, result){
+    UserModel.findOne({"_id":args.userId}, function(err, result){
     if(err)
     {
       resolve(err)
     }
-    if(!result["cart"].includes(itemid))
+    if(!result["cart"].includes(args.itemid))
     {
-      result["cart"].push(itemid)
+      result["cart"].push(args.itemid)
       return result.save()
     }
     })
@@ -454,7 +464,7 @@ const Mutation = new GraphQLObjectType({
     price:{type:GraphQLInt}
     },
     resolve(parent, args) {
-      let purchase = new PurchaseModel({"itemid": itemId, "gift":gift, "quantity":quantity,"price":price})
+      let purchase = new PurchaseModel({"itemid": args.itemId, "gift":args.gift, "quantity":args.quantity,"price":args.price})
       return purchase.save()
     },
   }

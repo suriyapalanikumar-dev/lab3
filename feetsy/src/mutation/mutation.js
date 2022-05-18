@@ -43,7 +43,8 @@ const createitem_mutation = gql`
     $itemdesc:String,
     $price:String,
     $shopname:String) {
-        addItemDetails(itemname:$itemname, itemcount:$itemcount,itemphoto:$itemphoto,itemcategory:$itemcategory,itemdesc:$itemdesc,price:$price,shopname:$shopname
+        addItemDetails(itemname:$itemname, itemcount:$itemcount,itemphoto:$itemphoto,itemcategory:$itemcategory,
+            itemdesc:$itemdesc,price:$price,shopname:$shopname
     )
   }
 `;

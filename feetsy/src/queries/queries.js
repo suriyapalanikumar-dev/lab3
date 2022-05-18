@@ -75,5 +75,6 @@ export {
   fetchfavorite_query,
   fetchsearch_query,
   fetchcart_query,
-  fetchitemsummary_query
+  fetchitemsummary_query,
+  fetchpurchase_query
 };
